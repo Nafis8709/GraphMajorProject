@@ -442,7 +442,9 @@ EdgeMatch findEdgeForPoint(Graph& G, double lon, double lat) {
     for(int u = 0; u < G.nodes.size(); u++) {
         if(G.nodes[u].type != "road") continue;
         
-        for(auto& [v, edgeCost] : G.adj[u]) {
+        for(auto edge : G.adj[u]) {
+            int v = edge.first;
+            double edgeCost = edge.second;
             if(G.nodes[v].type != "road") continue; // Only road-to-road edges
             if(u < v) { // Check each edge once
                 // Calculate actual distance between nodes
@@ -454,7 +456,7 @@ EdgeMatch findEdgeForPoint(Graph& G, double lon, double lat) {
                 double distPV = haversine(lon, lat,
                                          G.nodes[v].longitude, G.nodes[v].latitude);
                 
-                double diff = abs((distUP + distPV) - distUV);
+                double diff = fabs((distUP + distPV) - distUV);
                 
                 if(diff < tolerance) {
                     return {true, u, v, distUP, distPV};
